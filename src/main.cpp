@@ -4,8 +4,24 @@
 
 #include <iostream>
 
+// Check if the ray intersects with the sphere: (source+t*dir)^2
+bool hit_sphere(const point3 &center, double radius, const ray &r) {
+    vec3 oc = center - r.origin();
+
+    auto a = dot(r.direction(), r.direction());
+    auto b = 2.0 * dot(r.direction(), oc);
+    auto c = dot(oc, oc) - radius * radius;
+    auto discriminant = b * b - 4.0 * a * c;
+
+    return (discriminant >= 0);
+}
+
 // Linear interpolate color of ray
 color ray_color(const ray &r) {
+    if (hit_sphere(point3(0, 0, -1), 0.5, r)) {
+        return color(1, 0, 0);
+    }
+
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5 * (unit_direction.y() + 1.0);
 
@@ -15,7 +31,6 @@ color ray_color(const ray &r) {
 int main() {
     // Using an aspect ratio of 16:9 for the virtual viewport
     auto aspect_ratio = 16.0 / 9.0;
-
     int image_width = 400;
 
     // Ensure that the height of the image is at least 1
@@ -42,6 +57,7 @@ int main() {
 
     std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
+    // Start rendering
     for (int j = 0; j < image_height; j++) {
         std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
 
