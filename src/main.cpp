@@ -12,14 +12,14 @@ namespace fs = std::filesystem;
 double hit_sphere(const point3 &center, double radius, const ray &r) {
     vec3 oc = center - r.origin();
 
-    auto a = dot(r.direction(), r.direction());
-    auto b = -2.0 * dot(r.direction(), oc);
-    auto c = dot(oc, oc) - radius * radius;
-    auto discriminant = b * b - 4.0 * a * c;
+    auto a = r.direction().length_squared();
+    auto h = dot(r.direction(), oc);
+    auto c = oc.length_squared() - radius * radius;
+    auto discriminant = h * h - a * c;
     auto t = -1.0;
 
     if (discriminant >= 0) {
-        t = (-b - sqrt(discriminant)) / (2.0 * a);
+        t = (h - sqrt(discriminant)) / a;
     }
 
     return t;
