@@ -2,7 +2,11 @@
 #include "ray.h"
 #include "vec3.h"
 
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+
+namespace fs = std::filesystem;
 
 // Check if the ray intersects with the sphere: (source+t*dir)^2
 bool hit_sphere(const point3 &center, double radius, const ray &r) {
@@ -55,7 +59,16 @@ int main() {
     auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+    fs::path file_path = "snapshots/ray-sphere-intersection-basic.ppm";
+    fs::create_directories(file_path.parent_path());
+    std::ofstream out_file(file_path);
+
+    if (!out_file) {
+        std::cerr << "Error: Cannot open the output file." << std::endl;
+        return 1;
+    }
+
+    out_file << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
     // Start rendering
     for (int j = 0; j < image_height; j++) {
@@ -67,9 +80,10 @@ int main() {
             ray r(camera_center, ray_direction);
 
             color pixel_color = ray_color(r);
-            write_color(std::cout, pixel_color);
+            write_color(out_file, pixel_color);
         }
     }
 
+    out_file.close();
     std::clog << "\rDone.                 \n";
 }
