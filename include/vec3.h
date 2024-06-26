@@ -62,6 +62,14 @@ class vec3 {
     double length_squared() const {
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
+
+    static vec3 random() {
+        return vec3(random_double(), random_double(), random_double());
+    }
+
+    static vec3 random(double min, double max) {
+        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
 };
 
 using point3 = vec3;
@@ -106,6 +114,34 @@ inline vec3 unit_vector(const vec3 &v) {
     auto length = v.length();
 
     return (length > 0) ? v / length : v;
+}
+
+// Brute force method of getting a 'valid' random vector
+inline vec3 random_in_unit_sphere() {
+    while (true) {
+        auto p = vec3::random(-1, 1);
+
+        if (p.length_squared() < 1) {
+            return p;
+        }
+    }
+}
+
+inline vec3 random_unit_vector() {
+    return unit_vector(random_in_unit_sphere());
+}
+
+// Check if the dot product of the random vector and the surface normal is positive
+// or negative. Positive indicates that the random vector is facing the correct
+// direction, otherwise, invert the random vector
+inline vec3 random_on_hemisphere(const vec3 &normal) {
+    vec3 on_unit_sphere = random_unit_vector();
+
+    if (dot(on_unit_sphere, normal) > 0.0) {
+        return on_unit_sphere;
+    } else {
+        return -on_unit_sphere;
+    }
 }
 
 #endif

@@ -13,7 +13,7 @@ class camera {
     void render(const hittable &world) {
         initialize();
 
-        fs::path file_path = "snapshots/ray-tracing-anti-aliasing.ppm";
+        fs::path file_path = "snapshots/ray-tracing-diffuse.ppm";
         fs::create_directories(file_path.parent_path());
         std::ofstream out_file(file_path);
 
@@ -83,8 +83,12 @@ class camera {
     color ray_color(const ray &r, const hittable &world) const {
         hit_record rec;
 
+        // If the ray intersects with any surface, the ray is scattered
+        // uniformly in all directions (diffuse reflections)
         if (world.hit(r, interval(0, infinity), rec)) {
-            return 0.5 * (rec.normal + color(1, 1, 1));
+            vec3 direction = random_on_hemisphere(rec.normal);
+
+            return 0.5 * ray_color(ray(rec.p, direction), world);
         }
 
         vec3 unit_direction = unit_vector(r.direction());
