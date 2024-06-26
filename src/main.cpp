@@ -1,38 +1,14 @@
-#include "color.h"
-#include "ray.h"
-#include "vec3.h"
-
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-
-namespace fs = std::filesystem;
-
-// Check if the ray intersects with the sphere: (source+t*dir)^2
-double hit_sphere(const point3 &center, double radius, const ray &r) {
-    vec3 oc = center - r.origin();
-
-    auto a = r.direction().length_squared();
-    auto h = dot(r.direction(), oc);
-    auto c = oc.length_squared() - radius * radius;
-    auto discriminant = h * h - a * c;
-    auto t = -1.0;
-
-    if (discriminant >= 0) {
-        t = (h - sqrt(discriminant)) / a;
-    }
-
-    return t;
-}
+#include "utility.h"
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
 // Linear interpolate color of ray
-color ray_color(const ray &r) {
-    auto t = hit_sphere(point3(0, 0, -1), 0.5, r);
+color ray_color(const ray &r, const hittable &world) {
+    hit_record rec;
 
-    if (t > 0.0) {
-        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
-
-        return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+    if (world.hit(r, interval(0, infinity), rec)) {
+        return 0.5 * (rec.normal + color(1, 1, 1));
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -49,6 +25,11 @@ int main() {
     // Ensure that the height of the image is at least 1
     int image_height = int(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
+
+    // World/scene
+    hittable_list world;
+    world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
+    world.add(make_shared<sphere>(point3(0, -100.5, -1), 100));
 
     // Define the camera
     auto focal_length = 1.0;
@@ -68,7 +49,7 @@ int main() {
     auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    fs::path file_path = "snapshots/ray-sphere-intersection-gradient.ppm";
+    fs::path file_path = "snapshots/ray-sphere-intersection-gradient-world.ppm";
     fs::create_directories(file_path.parent_path());
     std::ofstream out_file(file_path);
 
@@ -88,7 +69,7 @@ int main() {
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            color pixel_color = ray_color(r);
+            color pixel_color = ray_color(r, world);
             write_color(out_file, pixel_color);
         }
     }

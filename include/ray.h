@@ -8,6 +8,7 @@ class ray {
     ray() {
     }
 
+    // Compute point p(t)=source+t*d
     ray(const point3 &origin, const vec3 &direction) : orig(origin), dir(direction) {
     }
 
