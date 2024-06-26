@@ -15,7 +15,7 @@ class camera {
     void render(const hittable &world) {
         initialize();
 
-        fs::path file_path = "snapshots/ray-tracing-lambertian.ppm";
+        fs::path file_path = "snapshots/ray-tracing-gamma.ppm";
         fs::create_directories(file_path.parent_path());
         std::ofstream out_file(file_path);
 
