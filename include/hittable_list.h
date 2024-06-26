@@ -1,14 +1,10 @@
 #ifndef HITTABLE_LIST_H
 #define HITTABLE_LIST_H
 
+#include "utility.h"
 #include "hittable.h"
-#include "interval.h"
 
-#include <memory>
 #include <vector>
-
-using std::make_shared;
-using std::shared_ptr;
 
 // Class for storing a list of hittable surfaces
 class hittable_list : public hittable {

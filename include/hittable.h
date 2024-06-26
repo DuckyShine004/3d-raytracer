@@ -1,7 +1,7 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include "ray.h"
+#include "utility.h"
 
 // Abstract class for storing surfaces that a ray might hit.
 class hit_record {
