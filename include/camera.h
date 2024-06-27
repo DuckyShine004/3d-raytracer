@@ -22,7 +22,7 @@ class camera {
     void render(const hittable &world) {
         initialize();
 
-        fs::path file_path = "snapshots/ray-tracing-defocus-blur.ppm";
+        fs::path file_path = "snapshots/ray-tracing-final-render.ppm";
         fs::create_directories(file_path.parent_path());
         std::ofstream out_file(file_path);
 
