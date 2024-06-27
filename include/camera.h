@@ -3,6 +3,7 @@
 
 #include "utility.h"
 #include "hittable.h"
+#include "material.h"
 #include "vec3.h"
 
 class camera {
@@ -15,7 +16,7 @@ class camera {
     void render(const hittable &world) {
         initialize();
 
-        fs::path file_path = "snapshots/ray-tracing-gamma.ppm";
+        fs::path file_path = "snapshots/ray-tracing-metal.ppm";
         fs::create_directories(file_path.parent_path());
         std::ofstream out_file(file_path);
 
@@ -94,10 +95,22 @@ class camera {
         // have to recursively check if the reflected ray intersects with
         // other surfaces in the scene
         // To model the reflection more accurately, we use the Lambertian model
-        if (world.hit(r, interval(epsilon, infinity), rec)) {
-            vec3 direction = rec.normal + random_unit_vector();
+        /* if (world.hit(r, interval(epsilon, infinity), rec)) { */
+        /*     vec3 direction = rec.normal + random_unit_vector(); */
 
-            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+        /*     return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world); */
+        /* } */
+
+        // Metal surface ray reflection behaviour
+        if (world.hit(r, interval(epsilon, infinity), rec)) {
+            ray scattered;
+            color attenuation;
+
+            if (rec.mat->scatter(r, rec, attenuation, scattered)) {
+                return attenuation * ray_color(scattered, depth - 1, world);
+            }
+
+            return color(0, 0, 0);
         }
 
         vec3 unit_direction = unit_vector(r.direction());
