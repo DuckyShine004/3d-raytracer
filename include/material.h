@@ -71,14 +71,35 @@ class dielectric : public material {
         double ri = rec.is_front_face ? (1.0 / refraction_index) : refraction_index;
 
         vec3 unit_direction = unit_vector(r_in.direction());
-        vec3 refracted = refract(unit_direction, rec.normal, ri);
 
-        scattered = ray(rec.p, refracted);
+        double cos_theta = fmin(dot(-unit_direction, rec.normal), 1.0);
+        double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+
+        bool cannot_refract = ri * sin_theta > 1.0;
+        vec3 direction;
+
+        // There's not always a solution to Snell's law, hence total internal refraction occurs
+        if (cannot_refract || reflectance(cos_theta, ri) > random_double()) {
+            direction = reflect(unit_direction, rec.normal);
+        } else {
+            direction = refract(unit_direction, rec.normal, ri);
+        }
+
+        scattered = ray(rec.p, direction);
+
         return true;
     }
 
   private:
     double refraction_index;
+
+    // Approximate real-life reflections (varies at different angles) with Schlick's approximation
+    static double reflectance(double cosine, double refraction_index) {
+        auto r0 = (1 - refraction_index) / (1 + refraction_index);
+        r0 = r0 * r0;
+
+        return r0 + (1 - r0) * pow((1 - cosine), 5);
+    }
 };
 
 #endif
