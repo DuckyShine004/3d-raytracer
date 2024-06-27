@@ -27,6 +27,8 @@ A simple 3d raytracer made with pure vector maths and C++. I would like to ackno
     <img src="https://raw.githubusercontent.com/DuckyShine004/3d-raytracer/main/snapshots/ray-tracing-fov.png" alt="ray-tracing-fov.png"/>
     <img src="https://raw.githubusercontent.com/DuckyShine004/3d-raytracer/main/snapshots/ray-tracing-camera-90-fov.png" alt="ray-tracing-camera-90-fov.png"/>
     <img src="https://raw.githubusercontent.com/DuckyShine004/3d-raytracer/main/snapshots/ray-tracing-camera-20-fov.png" alt="ray-tracing-camera-20-fov.png"/>
+    <img src="https://raw.githubusercontent.com/DuckyShine004/3d-raytracer/main/snapshots/ray-tracing-defocus-blur.png" alt="ray-tracing-defocus--blur.png"/>
+    <img src="https://raw.githubusercontent.com/DuckyShine004/3d-raytracer/main/snapshots/ray-tracing-final-render.png" alt="ray-tracing-final-render.png"/>
 </p>
 
 
